@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'"
+    />
+    <title>WS · 今日</title>
+    <link rel="stylesheet" href="base.css" />
+    <script defer src="vendor/purify.js"></script>
+    <script defer src="shared.js"></script>
+    <script defer src="effects.js"></script>
+    <script defer src="widget.js"></script>
+  </head>
+  <body class="widget-page">
+    <div id="surface">
+      <img id="background" alt="" /><canvas id="frozen-background"></canvas>
+      <div id="overlay"></div>
+      <canvas id="particles"></canvas>
+      <div id="theme-root"></div>
+      <div id="resize-handles" aria-label="拖动边缘调整大小"></div>
+    </div>
+    <div id="toast" role="status"></div>
+    <dialog id="task-dialog"></dialog>
+  </body>
+</html>

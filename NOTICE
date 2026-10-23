@@ -1,0 +1,19 @@
+WS
+
+The project LICENSE applies only to original portions that the relevant
+rightsholders are entitled to license under Apache-2.0. Existing MIT notices
+are preserved in licenses/WS-LEGACY-MIT.txt; no new ownership claim is made.
+Third-party components are not relicensed by the root LICENSE.
+
+Adapted WeChat reader/image/key scanner code: 328336690/wechat-decrypt (MIT).
+See integration/vendor/UPSTREAM-LICENSE.txt and integration/vendor/NOTICE.md.
+Config.Cipher compatibility: fanyuantaier/wechatauto-replica (Apache-2.0).
+See integration/vendor/COMPAT-LICENSE.txt and modification notices in vendor/NOTICE.md.
+For integration/vendor/feishu_mcp, assets and test image fixtures, the user
+confirmed original authorship or sufficient Apache-2.0 redistribution permission
+on 2026-10-23. No additional author identity or ownership is asserted.
+
+Electron/Chromium, npm and Python dependencies retain their own notices.
+Optional QQ Chat Exporter 6.3.2 is GPL-3.0; NapCat has a separate Limited
+Redistribution License with non-commercial restrictions. These are not covered
+by WS's Apache-2.0 grant. See docs/QQ_THIRD_PARTY.md and LICENSE_REVIEW.md.

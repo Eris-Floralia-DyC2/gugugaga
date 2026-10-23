@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'"
+    />
+    <title>WS · 管理空间</title>
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="manager.css" />
+    <script defer src="shared.js"></script>
+    <script defer src="summary.js"></script>
+    <script defer src="manager.js"></script>
+  </head>
+  <body class="manager-page">
+    <aside class="sidebar">
+      <div class="manager-brand">WS<span>DAYSPACE</span></div>
+      <p class="sidebar-caption">留一点空间，给今天。</p>
+      <nav id="navigation"></nav>
+      <div class="sidebar-bottom">
+        <span class="live-dot"></span>本地优先 · 便携存储<br /><small id="version"></small>
+      </div>
+    </aside>
+    <main class="manager-main">
+      <header class="manager-heading">
+        <div>
+          <div class="eyebrow">YOUR EVERYDAY SPACE</div>
+          <h1 id="page-title">全部待办</h1>
+        </div>
+        <button class="primary" id="new-task">＋ 新建待办</button>
+      </header>
+      <div id="global-errors" role="alert"></div>
+      <section id="manager-content"></section>
+    </main>
+    <dialog id="task-dialog"></dialog>
+    <aside
+      id="operation-progress"
+      class="operation-progress"
+      hidden
+      role="status"
+      aria-live="polite"
+    >
+      <strong></strong><progress></progress><small></small
+      ><button id="operation-cancel" type="button">取消当前操作</button>
+    </aside>
+    <div id="toast" role="status"></div>
+  </body>
+</html>

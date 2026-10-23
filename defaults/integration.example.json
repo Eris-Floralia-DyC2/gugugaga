@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "enabled": false,
+  "daily_time": "20:00",
+  "initial_days": 7,
+  "lookback_days": 7,
+  "cache_limit_mb": 2048,
+  "identity": "",
+  "schedule_action": "tasks",
+  "sources": [
+    {
+      "id": "source-example",
+      "platform": "wechat",
+      "account_id": "example-account",
+      "account_name": "我的微信",
+      "db_dir": "",
+      "enabled": false
+    }
+  ]
+}

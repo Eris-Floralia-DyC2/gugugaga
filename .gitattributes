@@ -1,0 +1,13 @@
+* text=auto eol=lf
+*.png -text
+*.gif -text
+*.apng -text
+*.ico -text
+
+# Archive exports are public source only; working-tree ignore is separate.
+/WS-Private export-ignore
+/dist export-ignore
+/runtime export-ignore
+/node_modules export-ignore
+/.venv export-ignore
+/.audit-local export-ignore

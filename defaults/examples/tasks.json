@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "id": "example-reading",
+      "title": "示例：阅读一章课程资料",
+      "description": "公共示例，不是个人任务",
+      "createdAt": "2026-10-20T00:00:00+08:00",
+      "planDate": "2026-10-20",
+      "dueDate": null,
+      "completed": false,
+      "completedAt": null,
+      "priority": "normal",
+      "order": 0,
+      "repeat": "none",
+      "occurrences": {},
+      "metadata": {}
+    }
+  ]
+}

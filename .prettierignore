@@ -1,0 +1,10 @@
+/node_modules/
+/dist/
+/.build/
+/.npm-cache/
+/.electron-cache/
+/data/
+/work/
+/test-artifacts/
+/THIRD_PARTY_NOTICES.md
+/package-lock.json
