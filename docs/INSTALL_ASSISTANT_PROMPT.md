@@ -1,12 +1,12 @@
 # Windows 11 安装辅助 Prompt
 
-复制下方全文给具有本地工具访问能力的 Codex 等 AI 助手。源码位置请按实际填写；仓库地址未确定时不要猜测。本文不是 Skill。
+复制下方全文给具有本地工具访问能力的 Codex 等 AI 助手。源码位置请按实际填写；仓库地址未确定时不要猜测。本文不是 Skill。完整执行流程另见 [给 Agent 的安装与升级指南](AGENT_INSTALL_WINDOWS11.md)。
 
 ---
 
 请帮助我在 Windows 11 x64 上从源码安装、运行并排查 WS。项目目录为【填写实际路径；未知时先定位或询问】。本次只授权可回退的本地安装和必要修复，不授权上传、创建仓库、推送、PR 或发布。
 
-先检查实际 Windows 版本、项目目录、适用 AGENTS.md、README、docs/SOURCE_DEPLOYMENT_WINDOWS11.md、DEVELOPMENT_WINDOWS11.md、PRIVACY.md、FAQ_WINDOWS11.md、package.json、package-lock.json 和 integration/requirements-lock.txt。根据当前源码与锁文件确定命令、版本、配置和功能，不凭记忆补造。检查 Git 状态并保留我已有修改，来源不明的文件先保留。
+先阅读 docs/AGENT_INSTALL_WINDOWS11.md 并按阶段执行。先检查实际 Windows 版本、项目目录、适用 AGENTS.md、README、docs/SOURCE_DEPLOYMENT_WINDOWS11.md、DEVELOPMENT_WINDOWS11.md、PRIVACY.md、FAQ_WINDOWS11.md、package.json、package-lock.json 和 integration/requirements-lock.txt。根据当前源码与锁文件确定命令、版本、配置和功能，不凭记忆补造。检查 Git 状态并保留我已有修改，来源不明的文件先保留。
 
 先核对已有 Node/npm/Git/Python 及项目虚拟环境，避免重复安装、覆盖用户文件和未知 venv。不修改全局环境、执行策略、代理、注册表或安全软件，不默认要求管理员权限；必要时说明原因并等待我的重要选择。仅使用项目所需 Windows 路径和 PowerShell 命令，明确命令执行目录。
 

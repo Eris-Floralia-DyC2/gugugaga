@@ -12,6 +12,7 @@ async function until(fn, label) {
   throw new Error('等待失败：' + label);
 }
 module.exports = async function (ctx) {
+  if (process.argv.includes('--deadline-test')) return require('./deadline.cjs')(ctx);
   const {
     app,
     widget,
@@ -285,10 +286,7 @@ module.exports = async function (ctx) {
     assert.equal(status.ok, true);
     assert.equal(status.value.info.config.version, 3);
     await wait(500);
-    assert.match(
-      await manager.webContents.executeJavaScript('document.body.innerText'),
-      /数据源/,
-    );
+    assert.match(await manager.webContents.executeJavaScript('document.body.innerText'), /数据源/);
     const denied = await widget.webContents.executeJavaScript('window.ws.integration("collect")');
     assert.equal(denied.ok, false);
     const unknown = await manager.webContents.executeJavaScript(
@@ -316,4 +314,3 @@ module.exports = async function (ctx) {
   quit();
   if (results.some((r) => r.status === 'fail')) app.exit(1);
 };
-

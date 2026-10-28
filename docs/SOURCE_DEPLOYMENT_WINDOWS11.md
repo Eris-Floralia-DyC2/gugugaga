@@ -12,7 +12,7 @@ node --version
 npm.cmd --version
 ```
 
-应为 Windows 11、64 位，Node >=22.12.0。该下限来自锁定的 @electron/packager 20.3.0 元数据；本次 Node 验证版本为 24.14.1。不满足时从 Node 官方网站安装适用版本；已有可用版本无需重复安装。Git 只在克隆时必需，也可解压已审核的源码 ZIP。源码仓库地址如下：
+应为 Windows 11、64 位，Node >=22.12.0。该下限来自锁定的 @electron/packager 20.3.0 元数据；本次 Node 验证版本为 24.14.1。不满足时从 Node 官方网站安装适用版本；已有可用版本无需重复安装。Git 只在克隆时必需，也可解压已审核的源码 ZIP。已发布的源码仓库可按下面步骤获取：
 
 ```powershell
 $repositoryUrl = 'https://github.com/Eris-Floralia-DyC2/gugugaga.git'

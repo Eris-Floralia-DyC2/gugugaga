@@ -142,7 +142,13 @@ function groups(doc, day = today(), all = false) {
     if (done) {
       if (all || at?.slice(0, 10) === day || today(new Date(at)) === day)
         result.completed.push(row);
-    } else result[d < day ? 'history' : d === day ? 'today' : 'future'].push(row);
+    } else {
+      // A deadline remains actionable through its due date, inclusive.
+      const activeDeadline = t.repeat === 'none' && t.dueDate && t.dueDate >= day;
+      result[activeDeadline ? 'today' : d < day ? 'history' : d === day ? 'today' : 'future'].push(
+        row,
+      );
+    }
   };
   for (const t of doc.tasks) {
     if (t.repeat === 'none') put(t, t.planDate, t.completed, t.completedAt);
