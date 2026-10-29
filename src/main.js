@@ -7,6 +7,7 @@ const {
   nativeImage,
   screen,
   powerMonitor,
+  globalShortcut,
   safeStorage,
   dialog,
   shell,
@@ -92,6 +93,7 @@ function start() {
     config,
     themes,
     integration,
+    visibilityShortcut,
     credentials,
     native,
     state = {},
@@ -335,6 +337,7 @@ function start() {
   }
   function quit() {
     quitting = true;
+    visibilityShortcut?.dispose();
     stopRecovery();
     saveState();
     clearInterval(perfTimer);
@@ -497,6 +500,10 @@ function start() {
       config: config.value,
       configError: config.error,
       statusError,
+      visibilityShortcut: visibilityShortcut?.status() || {
+        registered: false,
+        reason: '正在初始化',
+      },
       hasKey: credentials.has(),
       integration: integration?.snapshot() || null,
       themes: themes.list(),
@@ -521,6 +528,7 @@ function start() {
   app.on('window-all-closed', (e) => e?.preventDefault());
   app.on('before-quit', () => {
     quitting = true;
+    visibilityShortcut?.dispose();
   });
   app
     .whenReady()
@@ -866,6 +874,26 @@ function start() {
         autostart();
       });
       await createWidget();
+      visibilityShortcut = require('./core/visibility-shortcut.cjs').createVisibilityShortcut({
+        shortcuts: globalShortcut,
+        showTopmost: () => {
+          if (config.value.mode !== 'topmost') setMode('topmost');
+          showWidget();
+        },
+        hide: hideWidget,
+        isShown: () =>
+          !!widget &&
+          !widget.isDestroyed() &&
+          !hidden &&
+          config.value.mode === 'topmost' &&
+          native.api.visible(native.hwnd(widget)) &&
+          !native.api.iconic(native.hwnd(widget)),
+        onError: (error) => {
+          statusError = '快捷键显示失败：' + safeError(error);
+          broadcast();
+        },
+      });
+      if (!testMode || process.argv.includes('--hotkey-test')) visibilityShortcut.register();
       autostart();
       if (!testMode || process.argv.includes('--recovery-test')) {
         stopRecovery = require('./windows/recovery.cjs').startRecovery({
@@ -975,6 +1003,7 @@ function start() {
           dataRoot,
           integration,
           snapshot,
+          visibilityShortcut,
           bounds,
           setBounds,
           broadcast,

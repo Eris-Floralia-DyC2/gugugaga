@@ -1,6 +1,6 @@
 {
   "name": "ws-desktop",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Windows 11 portable desktop todo widget",
   "private": true,
   "author": "WS contributors",

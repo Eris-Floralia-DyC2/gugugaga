@@ -12,6 +12,7 @@ async function until(fn, label) {
   throw new Error('等待失败：' + label);
 }
 module.exports = async function (ctx) {
+  if (process.argv.includes('--hotkey-test')) return require('./hotkey.cjs')(ctx);
   if (process.argv.includes('--deadline-test')) return require('./deadline.cjs')(ctx);
   const {
     app,

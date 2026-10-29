@@ -72,6 +72,7 @@ const crypto = require('node:crypto');
       fs.cpSync(path.join(root, name), path.join(stage, name), { recursive: true });
     for (const name of [
       'smoke.cjs',
+      'hotkey.cjs',
       'deadline.cjs',
       'lifecycle.cjs',
       'flow-040.cjs',

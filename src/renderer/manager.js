@@ -342,6 +342,17 @@ function renderWindow() {
     value: WS.state.bounds?.height || c.height,
   });
   saveButton(p);
+  const shortcut = WS.state.visibilityShortcut;
+  p.append(
+    WS.el(
+      'p',
+      shortcut?.registered ? 'hint' : 'notice',
+      shortcut?.registered
+        ? '全局快捷键 Ctrl+T：显示 WS 并始终置顶，再按一次隐藏。托盘和任务分析继续运行。'
+        : '全局快捷键 Ctrl+T：' + (shortcut?.reason || '尚未启用'),
+    ),
+  );
+
   const a = WS.el('div', 'actions');
   a.append(WS.button('恢复右下角默认位置', () => WS.call(window.ws.window('reset-position'))));
   p.append(
