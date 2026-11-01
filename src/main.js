@@ -77,7 +77,10 @@ app.setPath('sessionData', path.join(dataRoot, 'cache', 'session'));
 app.setPath('logs', path.join(dataRoot, 'logs'));
 app.setPath('crashDumps', path.join(dataRoot, 'cache', 'crashes'));
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'wsapp', privileges: { standard: true, secure: true, supportFetchAPI: true } },
+  {
+    scheme: 'wsapp',
+    privileges: { standard: true, secure: true, supportFetchAPI: true },
+  },
 ]);
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -144,7 +147,11 @@ function start() {
   const toPhysical = (b) => {
     const p = screen.dipToScreenPoint({ x: b.x, y: b.y });
     const scale = screen.getDisplayMatching(b).scaleFactor;
-    return { ...p, width: Math.round(b.width * scale), height: Math.round(b.height * scale) };
+    return {
+      ...p,
+      width: Math.round(b.width * scale),
+      height: Math.round(b.height * scale),
+    };
   };
   const bounds = () => {
     const r = native.rect(native.hwnd(widget));
@@ -403,7 +410,10 @@ function start() {
       { label: 'LLM API 设置', click: () => openManager('llm') },
       { label: '程序设置', click: () => openManager('program') },
       { type: 'separator' },
-      { label: hidden ? '重新显示' : '收起到托盘', click: hidden ? showWidget : hideWidget },
+      {
+        label: hidden ? '重新显示' : '收起到托盘',
+        click: hidden ? showWidget : hideWidget,
+      },
       { label: '退出 WS', click: quit },
     ]).popup({ window: widget });
   }
@@ -458,7 +468,12 @@ function start() {
     const result = await dialog.showOpenDialog(manager || widget, {
       title: '选择背景（导入便携数据目录）',
       properties: ['openFile'],
-      filters: [{ name: '图片 / 动画', extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng'] }],
+      filters: [
+        {
+          name: '图片 / 动画',
+          extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'apng'],
+        },
+      ],
     });
     if (result.canceled) return null;
     const from = result.filePaths[0];
@@ -520,7 +535,10 @@ function start() {
       })),
       bounds: widget && !widget.isDestroyed() ? bounds() : null,
       autostartRegistered: app.isPackaged
-        ? app.getLoginItemSettings({ path: process.execPath, args: ['--autostart'] }).openAtLogin
+        ? app.getLoginItemSettings({
+            path: process.execPath,
+            args: ['--autostart'],
+          }).openAtLogin
         : false,
     };
   }
@@ -539,7 +557,11 @@ function start() {
       // WeChatTasks local API v1
       if (!testMode) {
         try {
-          const stopTaskApi = require('./core/task-api.cjs').startTaskApi({ repo, dataRoot, log });
+          const stopTaskApi = require('./core/task-api.cjs').startTaskApi({
+            repo,
+            dataRoot,
+            log,
+          });
           app.on('before-quit', stopTaskApi);
         } catch {
           log('task_api_failed');
@@ -582,7 +604,10 @@ function start() {
         async (_w, command, payload) => {
           if (command === 'copy_qq_login_token') {
             clipboard.writeText(integration.qq.loginToken());
-            return { copied: true, reason: 'QQ 登录 Token 已复制，请在本机登录页粘贴' };
+            return {
+              copied: true,
+              reason: 'QQ 登录 Token 已复制，请在本机登录页粘贴',
+            };
           }
           if (command === 'open_mcp_folder') {
             const folder = path.join(dataRoot, 'config', 'mcp');
@@ -625,7 +650,10 @@ function start() {
               filters: [{ name: '密钥文件', extensions: ['json', 'dpapi'] }],
             });
             if (chosen.canceled) return null;
-            payload = { source_id: payload?.source_id, path: chosen.filePaths[0] };
+            payload = {
+              source_id: payload?.source_id,
+              path: chosen.filePaths[0],
+            };
           }
           if (command === 'import_feishu') {
             const chosen = await dialog.showOpenDialog(manager, {
@@ -633,7 +661,10 @@ function start() {
               properties: ['openDirectory'],
             });
             if (chosen.canceled) return null;
-            payload = { source_id: payload?.source_id, path: chosen.filePaths[0] };
+            payload = {
+              source_id: payload?.source_id,
+              path: chosen.filePaths[0],
+            };
           }
           return integration.action(command, payload);
         },
@@ -664,7 +695,10 @@ function start() {
               properties: ['openDirectory'],
             });
             if (chosen.canceled) return null;
-            await integration.worker({ command: 'validate_transfer', path: chosen.filePaths[0] });
+            await integration.worker({
+              command: 'validate_transfer',
+              path: chosen.filePaths[0],
+            });
             integration.close();
             try {
               const result = transfer.importPrivate(dataRoot, chosen.filePaths[0]);
@@ -972,21 +1006,23 @@ function start() {
       }
       if (testMode) {
         await require(
-          process.argv.includes('--optimizations-053-test')
-            ? '../test/optimizations-053.cjs'
-            : process.argv.includes('--optimizations-test')
-              ? '../test/optimizations-052.cjs'
-              : process.argv.includes('--qq-controls-test')
-                ? '../test/qq-controls.cjs'
-                : process.argv.includes('--flow-acceptance')
-                  ? '../test/flow-040.cjs'
-                  : process.argv.includes('--interactive-test')
-                    ? '../test/interactive.cjs'
-                    : process.argv.includes('--lifecycle-test')
-                      ? '../test/lifecycle.cjs'
-                      : process.argv.includes('--resource-test')
-                        ? '../test/resources.cjs'
-                        : '../test/smoke.cjs',
+          process.argv.includes('--feishu-daily-test')
+            ? '../test/feishu-daily-ui.cjs'
+            : process.argv.includes('--optimizations-053-test')
+              ? '../test/optimizations-053.cjs'
+              : process.argv.includes('--optimizations-test')
+                ? '../test/optimizations-052.cjs'
+                : process.argv.includes('--qq-controls-test')
+                  ? '../test/qq-controls.cjs'
+                  : process.argv.includes('--flow-acceptance')
+                    ? '../test/flow-040.cjs'
+                    : process.argv.includes('--interactive-test')
+                      ? '../test/interactive.cjs'
+                      : process.argv.includes('--lifecycle-test')
+                        ? '../test/lifecycle.cjs'
+                        : process.argv.includes('--resource-test')
+                          ? '../test/resources.cjs'
+                          : '../test/smoke.cjs',
         )({
           app,
           get widget() {

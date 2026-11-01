@@ -127,7 +127,14 @@ function dueSchedule(now, time, lastDay) {
 class Integration extends EventEmitter {
   constructor({ root, dataRoot, repo, config, credentials, disabled = false }) {
     super();
-    Object.assign(this, { root, dataRoot, repo, config, credentials, disabled });
+    Object.assign(this, {
+      root,
+      dataRoot,
+      repo,
+      config,
+      credentials,
+      disabled,
+    });
     this.children = new Set();
     this.running = false;
     this.stage = '就绪';
@@ -146,6 +153,7 @@ class Integration extends EventEmitter {
     this.nextRetry = 0;
     this.importer = (items) => createImporter(repo, dataRoot)(items);
     this.qq = new (require('./qq-shell.cjs').QQShell)(dataRoot);
+    this.feishuDaily = new (require('./feishu-daily.cjs').FeishuDaily)(this);
     this.scheduleFile = path.join(dataRoot, 'state/message-schedule.json');
     try {
       this.lastDay = JSON.parse(fs.readFileSync(this.scheduleFile, 'utf8')).day;
@@ -226,10 +234,16 @@ class Integration extends EventEmitter {
     try {
       return JSON.parse(fs.readFileSync(path.join(this.dataRoot, 'config/summary.json'), 'utf8'));
     } catch {
-      return { version: 1, selected: [], since: 0, until: Math.floor(Date.now() / 1000) };
+      return {
+        version: 1,
+        selected: [],
+        since: 0,
+        until: Math.floor(Date.now() / 1000),
+      };
     }
   }
   async tick(now = new Date()) {
+    await this.feishuDaily.tick(now);
     if (this.disabled || this.running || Date.now() < this.nextRetry || !this.info?.config.enabled)
       return;
     const c = this.info.config,
@@ -268,7 +282,13 @@ class Integration extends EventEmitter {
     this.cancelled = false;
     this.error = null;
     this.lastResult = null;
-    this.progress = { stage: label, startedAt: Date.now(), done: null, total: null, detail: '' };
+    this.progress = {
+      stage: label,
+      startedAt: Date.now(),
+      done: null,
+      total: null,
+      detail: '',
+    };
     this.stage = label;
     this.emit('change');
     try {
@@ -344,7 +364,11 @@ class Integration extends EventEmitter {
           );
           if (failed.length === value.conversations.length && failed.length)
             throw new Error(failed.map((c) => c.reason).join('；'));
-          return { ...value, read: collected.read, collectionErrors: collected.errors };
+          return {
+            ...value,
+            read: collected.read,
+            collectionErrors: collected.errors,
+          };
         }
         const review = [],
           usefulInformation = [...(this.lastTaskResult?.usefulInformation || [])];
@@ -422,7 +446,10 @@ class Integration extends EventEmitter {
         // Known attachment failures survive provider/collection errors. Unknown LLM results
         // never become an ordinary confirmation; the worker uses successful receipts only.
         if (!this.cancelled) {
-          const decisions = await this.worker({ command: 'group_confirmations', selection: pick });
+          const decisions = await this.worker({
+            command: 'group_confirmations',
+            selection: pick,
+          });
           require('./group-confirmations.cjs').reconcile(this.repo, this.dataRoot, decisions);
         }
       }
@@ -437,6 +464,7 @@ class Integration extends EventEmitter {
       JSON.stringify(payload).length > 2 * 1024 * 1024
     )
       throw new Error('消息操作参数无效');
+    if (command.startsWith('feishu_daily_')) return this.feishuDaily.action(command, payload);
     if (command === 'clear_result_messages') {
       if (this.running) throw new Error('请等待当前操作结束后再清空结果消息');
       if (this.lastTaskResult) {
@@ -473,8 +501,15 @@ class Integration extends EventEmitter {
           );
           if (!source) throw new Error('请选择当前 QQ 数据源后切换账号');
           await this.qq.stop('switching');
-          await this.worker({ command: 'begin_qq_switch', source_id: source.id });
-          await this.qq.start({ explicit: true, forceLogin: true, forSwitch: true });
+          await this.worker({
+            command: 'begin_qq_switch',
+            source_id: source.id,
+          });
+          await this.qq.start({
+            explicit: true,
+            forceLogin: true,
+            forSwitch: true,
+          });
           return { reason: '请在登录页登录新账号，再点击确认当前账号并连接' };
         }
         const forSwitch = this.qq.session().switching === true;
@@ -502,7 +537,10 @@ class Integration extends EventEmitter {
       return this.operation('检测连接', async () => {
         const previous = this.qq.session();
         try {
-          await this.qq.start({ explicit: true, forSwitch: previous.switching === true });
+          await this.qq.start({
+            explicit: true,
+            forSwitch: previous.switching === true,
+          });
           this.qq.setSession({ paused: false, switching: false, reason: '' });
           const result = await this.worker({ ...payload, command }, 900000);
           if (!result.ok) this.qq.setSession(previous);
@@ -558,6 +596,7 @@ class Integration extends EventEmitter {
     );
   }
   close() {
+    this.feishuDaily.close();
     clearInterval(this.timer);
     for (const child of this.children) child.kill();
     this.children.clear();

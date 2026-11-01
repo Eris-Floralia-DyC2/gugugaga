@@ -48,9 +48,28 @@ class Feishu:
                 seen.add(token)
         return asyncio.run(read())
 
-    def iter_messages(self,chat,since,until):
+    def iter_daily_messages(self,chat,since,until):
+        return self.iter_messages(chat,since,until,include_threads=True)
+
+    def iter_messages(self,chat,since,until,include_threads=False):
         async def read():
             await self.verify_account()
+            threads=set()
+            if include_threads:
+                # Chat history omits replies in ordinary-group threads. Discover roots once
+                # per group/run, including old roots with replies posted in a newer day.
+                cache=getattr(self,'_daily_threads',{})
+                if chat not in cache:
+                    discovery=''; visited=set()
+                    while True:
+                        p=await self.client.list_messages(chat,page_token=discovery)
+                        threads.update(m['thread_id'] for m in p['messages'] if m.get('thread_id'))
+                        if not p['has_more']:break
+                        discovery=p['next_page_token']
+                        if not discovery or discovery in visited:raise UserError('飞书话题索引分页异常')
+                        visited.add(discovery)
+                    cache[chat]=threads;self._daily_threads=cache
+                threads=cache[chat]
             token=''; seen=set()
             while True:
                 page=await self.client.list_messages(chat,str(since),str(until),page_token=token)
@@ -59,6 +78,26 @@ class Feishu:
                 token=page['next_page_token']
                 if not token or token in seen: raise UserError('飞书分页状态异常')
                 seen.add(token)
+            if include_threads:
+                from feishu_mcp.feishu import normalize_message
+                for thread in threads:
+                    token='';seen=set()
+                    while True:
+                        params={'container_id_type':'thread','container_id':thread,'page_size':50,'sort_type':'ByCreateTimeDesc'}
+                        if token:params['page_token']=token
+                        p=await self.client._request_json('GET','/open-apis/im/v1/messages',params=params)
+                        messages=[normalize_message(m) for m in p.get('items',[])]
+                        eligible=[]
+                        for m in messages:
+                            if not m['chat_id']:m['chat_id']=chat
+                            if m['chat_id']!=chat:raise UserError('飞书话题返回了其他群的消息')
+                            stamp=int(m['create_time'])//1000
+                            if since<=stamp<=until:eligible.append(m)
+                        yield eligible
+                        if not p.get('has_more') or (messages and min(int(m['create_time'])//1000 for m in messages)<since):break
+                        token=p.get('page_token','')
+                        if not token or token in seen:raise UserError('飞书话题回复分页异常')
+                        seen.add(token)
         # Use an async generator one page at a time without accumulating whole chats.
         loop=asyncio.new_event_loop()
         gen=read()
@@ -93,7 +132,7 @@ class Feishu:
                         'chat_id':chat,'chat_name':chat,'message_id':m['message_id'],'sender_id':m['sender'].get('id',''),
                         'sender_name':m['sender'].get('id',''),'timestamp':int(m['create_time'])//1000,'timezone':'Asia/Shanghai',
                         'message_type':m['msg_type'],'content':text[:120000],'attachments':attachments,'reply_to':m['parent_id'] or None,
-                        'raw_reference':{'message_id':m['message_id']},'parse_status':'unprocessed' if voice else 'ok','truncated':len(text)>120000}
+                        'raw_reference':{'message_id':m['message_id'],'root_id':m.get('root_id',''),'thread_id':m.get('thread_id','')},'parse_status':'unprocessed' if voice else 'ok','truncated':len(text)>120000}
         finally:
             loop.run_until_complete(gen.aclose()); loop.close()
 

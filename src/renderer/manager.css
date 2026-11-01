@@ -380,3 +380,29 @@ h1 {
 .operation-progress[hidden] {
   display: none;
 }
+.feishu-settings {
+  margin: 18px 0;
+}
+.feishu-settings > summary,
+.daily-summary > summary {
+  cursor: pointer;
+  padding: 12px 0;
+}
+.feishu-settings .summary-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.feishu-settings .summary-option span {
+  flex: 1;
+}
+.feishu-settings .summary-option input {
+  width: auto;
+}
+.daily-summary {
+  margin: 12px 0;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}

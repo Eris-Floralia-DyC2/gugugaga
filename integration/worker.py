@@ -51,7 +51,7 @@ def status(state):
                         'media_key':bool((state.root/'secrets'/('media-'+s['id']+'.dpapi')).exists()),
                         'health':read_json(state.root/('state/health-'+s['id']+'.json'),{}),
                         'connection':read_json(state.root/('state/connection-'+s['id']+'.json'),{})})
-    return {'config':c,**counts,'review_notes':reviews[:30],'sources':sources,'cache':Cache(state,c['cache_limit_mb']).usage(),
+    return {'feishu_daily_connection':read_json(state.root/'state/feishu-daily-health.json',{}),'config':c,**counts,'review_notes':reviews[:30],'sources':sources,'cache':Cache(state,c['cache_limit_mb']).usage(),
             'qq_environment':{'prepared':(state.root/'qq/installation.json').is_file(),**read_json(state.root/'qq/installation.json',{})},
             'last_collection':read_json(state.root/'state/collection-status.json',{}),
             'analysis_prompt':read_json(state.root/'config/rules/analysis.json',{}).get('instructions',''),
@@ -61,6 +61,9 @@ def status(state):
 
 def dispatch(state,request):
     command=request.get('command')
+    if isinstance(command,str) and command.startswith('feishu_daily_'):
+        from feishu_daily import dispatch as daily_dispatch
+        return daily_dispatch(state,request)
     if command=='save_ai_features':
         from feature_rules import save
         return save(state,request.get('settings'))

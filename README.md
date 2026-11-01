@@ -1,10 +1,12 @@
-# 咕咕嘎嘎（WS）0.5.5
+# 咕咕嘎嘎（WS）0.5.6
 
 面向 **Windows 11 x64** 的便携桌面待办小组件与工作台。支持任务新增、编辑、完成、备份，主题、背景、个性签名、多屏位置与桌面/置顶模式。可选微信本地只读采集、QQ 独立后台、飞书授权读取，以及通过兼容 Chat Completions 的 AI 服务总结会话、提取任务。语音不解析，不部署本地语音模型。
 
 本地手动待办和外观功能无需配置账号或 AI。消息功能另外需要 Python 运行时、对应数据源授权；AI 总结/分析还需要模型及 API Key，可能产生服务费用。默认私人数据位于程序旁的 `WS-Private`，不要上传或打包该目录。
 
 0.5.4 修复普通任务在截止日期当天未归入今日待办的问题；显示分组不修改任务存储日期。安装 agent 请优先阅读 [Agent 安装与升级指南](docs/AGENT_INSTALL_WINDOWS11.md)。
+
+0.5.6 新增独立的飞书群聊总结，支持每日定时、按自然日归档、次日补采和历史查看。首次使用请看 [飞书首次使用说明](docs/飞书首次使用说明.md)。完整便携包已包含消息处理运行时；从源码运行需要先构建该运行时。
 
 全局快捷键 **Ctrl+T**：显示 WS 并始终置顶，再按一次隐藏。
 
@@ -26,6 +28,8 @@ npm.cmd start
 - [给 agent 的安装与升级步骤](docs/AGENT_INSTALL_WINDOWS11.md)
 - [源码部署](docs/SOURCE_DEPLOYMENT_WINDOWS11.md)
 - [使用、更新、备份和卸载](docs/USER_GUIDE_WINDOWS11.md)
+- [飞书首次使用说明](docs/飞书首次使用说明.md)
+- [飞书每日总结与补采规则](docs/FEISHU_DAILY.md)
 - [开发、测试和打包](docs/DEVELOPMENT_WINDOWS11.md)
 - [隐私与联网说明](docs/PRIVACY.md)
 - [常见问题](docs/FAQ_WINDOWS11.md)

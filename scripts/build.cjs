@@ -69,7 +69,9 @@ const crypto = require('node:crypto');
       'NOTICE',
       'licenses',
     ])
-      fs.cpSync(path.join(root, name), path.join(stage, name), { recursive: true });
+      fs.cpSync(path.join(root, name), path.join(stage, name), {
+        recursive: true,
+      });
     for (const name of [
       'smoke.cjs',
       'hotkey.cjs',
@@ -79,6 +81,7 @@ const crypto = require('node:crypto');
       'qq-controls.cjs',
       'optimizations-052.cjs',
       'optimizations-053.cjs',
+      'feishu-daily-ui.cjs',
       'interactive.cjs',
       'resources.cjs',
       'live-import.cjs',
@@ -99,7 +102,9 @@ const crypto = require('node:crypto');
           throw new Error('Dependency input contains a directory link');
         paths.walk(p);
         if (lock.packages['node_modules/' + name] && !lock.packages['node_modules/' + name].dev)
-          fs.cpSync(p, path.join(stage, 'node_modules', name), { recursive: true });
+          fs.cpSync(p, path.join(stage, 'node_modules', name), {
+            recursive: true,
+          });
       };
       if (entry.startsWith('@'))
         for (const sub of fs.readdirSync(packagePath))
@@ -122,7 +127,9 @@ const crypto = require('node:crypto');
       appCopyright: 'WS contributors',
       electronVersion: require('../package.json').devDependencies.electron,
       electronZipDir: process.env.WS_ELECTRON_ZIPS || undefined,
-      download: { cacheRoot: path.join(privateRoot, 'build/electron-download') },
+      download: {
+        cacheRoot: path.join(privateRoot, 'build/electron-download'),
+      },
     });
     const target = path.join(root, 'dist', 'WS-Clean-' + version + '-' + Date.now());
     fs.cpSync(built, target, { recursive: true });
@@ -136,8 +143,12 @@ const crypto = require('node:crypto');
     fs.copyFileSync(path.join(built, 'LICENSE'), path.join(target, 'Electron.LICENSE'));
     // The root README links to WS's LICENSE; retain Electron's license under its own name.
     for (const name of ['LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md', 'licenses'])
-      fs.cpSync(path.join(root, name), path.join(target, name), { recursive: true });
-    fs.cpSync(path.join(root, 'docs'), path.join(target, 'docs'), { recursive: true });
+      fs.cpSync(path.join(root, name), path.join(target, name), {
+        recursive: true,
+      });
+    fs.cpSync(path.join(root, 'docs'), path.join(target, 'docs'), {
+      recursive: true,
+    });
     fs.copyFileSync(path.join(root, 'README.md'), path.join(target, 'README.md'));
     fs.writeFileSync(
       path.join(target, 'release.json'),

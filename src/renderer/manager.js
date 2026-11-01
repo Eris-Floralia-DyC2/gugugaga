@@ -6,6 +6,7 @@ const pages = {
   llm: ['✦', 'AI 服务'],
   messages: ['✉', '数据源设置'],
   summary: ['≋', '会话总结与任务分析'],
+  feishuDaily: ['◴', '飞书群聊总结'],
   program: ['⚙', '程序与数据'],
 };
 let active = decodeURIComponent(location.hash.slice(1)) || 'tasks',
@@ -115,13 +116,21 @@ function renderTasks() {
                 '每日规则（编辑会影响整个规则）',
                 s.document.tasks
                   .filter((t) => t.repeat === 'daily')
-                  .map((t) => ({ ...t, instanceDate: s.day, completed: !!t.occurrences[s.day] })),
+                  .map((t) => ({
+                    ...t,
+                    instanceDate: s.day,
+                    completed: !!t.occurrences[s.day],
+                  })),
               ],
             ]
           : [
               [
                 pages[filter]?.[1] ||
-                  { today: '今日待办', history: '历史未完成', future: '将来计划' }[filter],
+                  {
+                    today: '今日待办',
+                    history: '历史未完成',
+                    future: '将来计划',
+                  }[filter],
                 views[filter],
               ],
             ];
@@ -155,7 +164,12 @@ function renderHistory() {
   for (const t of WS.state.document.tasks) {
     if (t.repeat === 'none' && t.completed) records.push({ ...t, instanceDate: t.planDate });
     for (const [date, at] of Object.entries(t.occurrences))
-      records.push({ ...t, instanceDate: date, completed: true, completedAt: at });
+      records.push({
+        ...t,
+        instanceDate: date,
+        completed: true,
+        completedAt: at,
+      });
   }
   records.sort((a, b) => b.completedAt.localeCompare(a.completedAt));
   const note = WS.el('p', 'hint', '保留完整完成历史；撤销后任务返回它原计划日期对应的分组。');
@@ -225,7 +239,9 @@ function renderAppearance() {
     value: a.background,
     placeholder: '通过下面按钮导入图片',
   });
-  appendField(grid, 'appearance.position', '背景定位（百分比）', { value: a.position });
+  appendField(grid, 'appearance.position', '背景定位（百分比）', {
+    value: a.position,
+  });
   const actions = WS.el('div', 'actions');
   actions.append(
     WS.button('导入 PNG / JPG / WebP / GIF / APNG', async () => {
@@ -273,16 +289,28 @@ function renderAppearance() {
     ['filter', '叠加滤镜强度', 0, 1, 0.05],
   ];
   nums.forEach(([k, l, min, max, step]) =>
-    appendField(vg, 'appearance.' + k, l, { type: 'number', min, max, step, value: a[k] }),
+    appendField(vg, 'appearance.' + k, l, {
+      type: 'number',
+      min,
+      max,
+      step,
+      value: a[k],
+    }),
   );
-  appendField(vg, 'appearance.border', '显示边框', { type: 'checkbox', value: a.border });
+  appendField(vg, 'appearance.border', '显示边框', {
+    type: 'checkbox',
+    value: a.border,
+  });
   const fx = card('粒子与性能');
   const fg = formGrid(fx);
   appendField(fg, 'appearance.animations', '启用动态效果', {
     type: 'checkbox',
     value: a.animations,
   });
-  appendField(fg, 'appearance.particles', '启用漂浮粒子', { type: 'checkbox', value: a.particles });
+  appendField(fg, 'appearance.particles', '启用漂浮粒子', {
+    type: 'checkbox',
+    value: a.particles,
+  });
   appendField(fg, 'appearance.performance', '性能模式', {
     choices: [
       ['auto', '自动'],
@@ -304,7 +332,13 @@ function renderAppearance() {
     ['particleIntensity', '粒子强度', 0, 2, 0.1],
     ['fps', '帧率上限', 5, 60, 1],
   ].forEach(([k, l, min, max, step]) =>
-    appendField(fg, 'appearance.' + k, l, { type: 'number', min, max, step, value: a[k] }),
+    appendField(fg, 'appearance.' + k, l, {
+      type: 'number',
+      min,
+      max,
+      step,
+      value: a[k],
+    }),
   );
   fx.append(
     WS.el(
@@ -388,7 +422,10 @@ function renderLLM() {
     value: l.baseUrl,
     placeholder: 'https://provider.example/v1',
   });
-  appendField(g, 'llm.model', 'Model', { value: l.model, placeholder: '填写提供商的模型标识' });
+  appendField(g, 'llm.model', 'Model', {
+    value: l.model,
+    placeholder: '填写提供商的模型标识',
+  });
   appendField(g, 'llm.thinking', '思考模式（仅对支持此参数的接口）', {
     choices: [
       ['provider_default', '提供商默认'],
@@ -754,7 +791,10 @@ function renderMessages() {
           '已有 QQ 数据源。切换登录账号请取消编辑，使用 QQ 卡片上的“切换 QQ 账号”；不需要重复添加。',
         ),
       );
-    const name = field('账号显示名称', { value: source.account_name, maxLength: 100 });
+    const name = field('账号显示名称', {
+      value: source.account_name,
+      maxLength: 100,
+    });
     name.id = 'source-account-name';
     const directory = field('微信本机数据目录', {
       value: source.db_dir,
@@ -1003,7 +1043,10 @@ function renderMessages() {
       WS.button('移除数据源', () =>
         confirm('移除数据源？', '移除运行入口，已保存任务、消息、凭据和总结不会自动删除。', () =>
           call('save_config', {
-            config: { ...value, sources: value.sources.filter((v) => v.id !== s.id) },
+            config: {
+              ...value,
+              sources: value.sources.filter((v) => v.id !== s.id),
+            },
           }),
         ),
       ),
@@ -1053,6 +1096,7 @@ function render() {
       llm: renderLLM,
       messages: renderMessages,
       summary: renderSummary,
+      feishuDaily: renderFeishuDaily,
       program: renderProgram,
     })[active] || renderTasks
   )();

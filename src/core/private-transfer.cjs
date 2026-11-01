@@ -17,6 +17,7 @@ const groups = {
     'config/settings.json',
     'config/integration.json',
     'config/summary.json',
+    'config/feishu-daily.json',
     'config/conversation-directory.json',
     'config/rules',
     'themes',
@@ -128,7 +129,11 @@ function exportPrivate(root, selection) {
       c.autostart = false;
       atomicWrite(dest, JSON.stringify(c));
     }
-    files.push({ path: name, sha256: sha(dest), bytes: fs.statSync(dest).size });
+    files.push({
+      path: name,
+      sha256: sha(dest),
+      bytes: fs.statSync(dest).size,
+    });
   }
   // The origin is private metadata for rebasing WS-owned references on import.
   atomicWrite(
@@ -226,7 +231,11 @@ function importPrivate(root, source, { failAfter = -1 } = {}) {
     }
     journal.status = 'committed';
     atomicWrite(path.join(tx, 'journal.json'), JSON.stringify(journal));
-    return { imported: m.files.length, credentials: 'requires_reconnect', backup: tx };
+    return {
+      imported: m.files.length,
+      credentials: 'requires_reconnect',
+      backup: tx,
+    };
   } catch (e) {
     recover(root);
     throw e;
